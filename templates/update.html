@@ -8,31 +8,35 @@
         </div>
 
     {% endfor %}
-    {% if name %}
-        <h1>User updated</h1>
-        <br><br>
-        <table class="table table-striped">
-            {% for our_user in our_users %}
-                <tr>
-                    <td>{{ our_user.id }}. {{ our_user.name }} - {{ our_user.email }} - {{ our_user.fav_color }}</td>
-                </tr>
-            {% endfor %}
-        </table>
-    {% else %}
+    {#    {% if name %}#}
+    {#        <h1>User updated</h1>#}
+    {#        <br><br>#}
+    {#        <table class="table table-striped">#}
+    {#            {% for our_user in our_users %}#}
+    {#                <tr>#}
+    {#                    <td>{{ our_user.id }}. {{ our_user.name }} - {{ our_user.email }} - {{ our_user.fav_color }}</td>#}
+    {#                </tr>#}
+    {#            {% endfor %}#}
+    {#        </table>#}
+    {#    {% else %}#}
+    {% if name_to_update.id == current_user.id %}
+
         <h1>Update User:</h1>
-        <br>
+        <br><br>
+        current user Id : {{ current_user.id }}
+        Id to update: {{ name_to_update.id }}
         <form method="POST" action="/update/{{ name_to_update.id }}">
             {{ form.hidden_tag() }}
             {{ form.name.label(class="form-label") }}
             {{ form.name(class="form-control",value=name_to_update.name) }}
             <br/>
-             {{ form.username.label(class="form-label") }}
+            {{ form.username.label(class="form-label") }}
             {{ form.username(class="form-control",value=name_to_update.name) }}
             <br/>
             {{ form.email.label(class="form-label") }}
             {{ form.email(class="form-control",value = name_to_update.email) }}
             <br/>
-             <br/>
+            <br/>
             {{ form.fav_color.label(class="form-label") }}
             {{ form.fav_color(class="form-control",value = name_to_update.fav_color) }}
             <br/>
@@ -40,8 +44,21 @@
             <a href="{{ url_for('delete',id=name_to_update.id) }}"  class="btn btn-danger">Delete</a>
         </form>
         <br><br><br>
-
-
+    {% else %}
+{#        <div class="alert alert-warning alert-dismissible fade show" role="alert">#}
+{#        <h2><strong>Access Deny</strong></h2>#}
+{#            <p>You cant update this</p>#}
+{#            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
+{#        </div>#}
+         <div class="modal-dialog modal-fullscreen-sm-down">
+        <h2><strong>Access Deny</strong></h2>
+            <p>You cant update this</p>
+{#            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
+        </div>
     {% endif %}
+
+
+
+    {#    {% endif %}#}
 
 {% endblock content %}

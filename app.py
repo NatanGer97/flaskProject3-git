@@ -20,6 +20,8 @@ from wtforms.validators import DataRequired, equal_to
 # create a flask instance
 from wtforms.widgets import TextArea
 
+from webForms import  *
+
 app = Flask(__name__)
 # secret key
 
@@ -41,98 +43,55 @@ migrate = Migrate(app,
 
 # Create db Model:
 
-class Users(db.Model,
-            UserMixin):
-    username = db.Column(db.String(20),
-                         nullable=False,
-                         unique=True)
-    id = db.Column(db.Integer,
-                   primary_key=True)
-    name = db.Column(db.String(200),
-                     nullable=False)
-    email = db.Column(db.String(120),
-                      nullable=False,
-                      unique=True)
-    fav_color = db.Column(db.String(120),
-                          default="None")
-
-    date_added = db.Column(db.DateTime,
-                           default=datetime.utcnow())
-    # passwords things
-    password_hash = db.Column(db.String(128))
-
-    @property
-    def password(self):
-        raise AttributeError('password is not a readable')
-
-    @password.setter
-    def password(self, _password):
-        self.password_hash = generate_password_hash(_password)
-
-    def verify_password(self, _password):
-        return check_password_hash(self.password_hash,
-                                   _password)
-
-    # create a string
-    def __repr__(self):
-        return '<Name %r>' % self.name
 
 
-# create form class
-class NamerForm(FlaskForm):
-    name = StringField("What is your name?",
-                       validators=[DataRequired()])
-    submit = SubmitField("Submit")
+#
+# # create form class
+# class NamerForm(FlaskForm):
+#     name = StringField("What is your name?",
+#                        validators=[DataRequired()])
+#     submit = SubmitField("Submit")
+#
+#
+# class PasswordForm(FlaskForm):
+#     email = StringField("What is your email?",
+#                         validators=[DataRequired()])
+#     password_hash = PasswordField("What is your password?",
+#                                   validators=[DataRequired()])
+#     submit = SubmitField("Submit")
 
 
-class PasswordForm(FlaskForm):
-    email = StringField("What is your email?",
-                        validators=[DataRequired()])
-    password_hash = PasswordField("What is your password?",
-                                  validators=[DataRequired()])
-    submit = SubmitField("Submit")
+# class UserForm(FlaskForm):
+#     name = StringField("Name",
+#                        validators=[DataRequired()])
+#
+#     username = StringField("username",
+#                            validators=[DataRequired()])
+#     email = StringField("Email",
+#                         validators=[DataRequired()])
+#     fav_color = StringField("Favorite Color")
+#     password_hash = PasswordField("Password",
+#                                   validators=[DataRequired(), equal_to('password_hash_2',
+#                                                                        message='Password must to match')])
+#     password_hash_2 = PasswordField("Confirm Password",
+#                                     validators=[DataRequired()])
+#     submit = SubmitField("Submit")
 
 
-class UserForm(FlaskForm):
-    name = StringField("Name",
-                       validators=[DataRequired()])
-
-    username = StringField("username",
-                           validators=[DataRequired()])
-    email = StringField("Email",
-                        validators=[DataRequired()])
-    fav_color = StringField("Favorite Color")
-    password_hash = PasswordField("Password",
-                                  validators=[DataRequired(), equal_to('password_hash_2',
-                                                                       message='Password must to match')])
-    password_hash_2 = PasswordField("Confirm Password",
-                                    validators=[DataRequired()])
-    submit = SubmitField("Submit")
 
 
-class Posts(db.Model):
-    id = db.Column(db.Integer,
-                   primary_key=True)
-    title = db.Column(db.String(225))
-    content = db.Column(db.Text)
-    author = db.Column(db.String(225))
-    date_posted = db.Column(db.DateTime,
-                            default=datetime.utcnow)
-    slug = db.Column(db.String(255))
-
-
-class PostForm(FlaskForm):
-    title = StringField("Title",
-                        validators=[DataRequired()])
-    content = StringField("Content",
-                          validators=[DataRequired()],
-                          widget=TextArea())
-    author = StringField("Author",
-                         validators=[DataRequired()])
-    slug = StringField("Slug",
-                       validators=[DataRequired()])
-    submit = SubmitField("Submir")
-
+# class PostForm(FlaskForm):
+#     title = StringField("Title",
+#                         validators=[DataRequired()])
+#     content = StringField("Content",
+#                           validators=[DataRequired()],
+#                           widget=TextArea())
+#     author = StringField("Author",
+#                          validators=[DataRequired()])
+#     slug = StringField("Slug",
+#                        validators=[DataRequired()])
+#     submit = SubmitField("Submir")
+#
 
 # add a post page
 @app.route('/add-post',
@@ -228,6 +187,7 @@ def posts():
 
 @app.route('/update/<int:id>',
            methods=['GET', 'POST'])
+@login_required
 def update(id):
     form = UserForm()
     name_to_update = Users.query.get_or_404(id)
@@ -379,6 +339,7 @@ def logout():
 @login_required
 def dashboard():
     form = UserForm()
+    id = current_user.id
 
     name_to_update = Users.query.get_or_404(current_user.id)
     if request.method == 'POST':
@@ -392,17 +353,17 @@ def dashboard():
             flash("User updated successfully")
             return render_template("dashboard.html",
                                    form=form,
-                                   name_to_update=name_to_update)
+                                   name_to_update=name_to_update,id=id)
         except:
             db.session.commit()
             flash("error in updating")
             return render_template("dashboard.html",
                                    form=form,
-                                   name_to_update=name_to_update)
+                                   name_to_update=name_to_update,id=id)
     else:  # GET
         return render_template("dashboard.html",
                                form=form,
-                               name_to_update=name_to_update)
+                               name_to_update=name_to_update,id=id)
 
     return render_template('dashboard.html')
 
@@ -496,7 +457,83 @@ def get_current_date():
 # @app.errorhandler(500)
 # def page_not_found(e):
 #     return render_template("500.html"), 500
+class Users(db.Model,
+            UserMixin):
+    username = db.Column(db.String(20),
+                         nullable=False,
+                         unique=True)
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    name = db.Column(db.String(200),
+                     nullable=False)
+    email = db.Column(db.String(120),
+                      nullable=False,
+                      unique=True)
+    fav_color = db.Column(db.String(120),
+                          default="None")
 
+    date_added = db.Column(db.DateTime,
+                           default=datetime.utcnow())
+    # passwords things
+    password_hash = db.Column(db.String(128))
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable')
+
+    @password.setter
+    def password(self, _password):
+        self.password_hash = generate_password_hash(_password)
+
+    def verify_password(self, _password):
+        return check_password_hash(self.password_hash,
+                                   _password)
+
+    # create a string
+    def __repr__(self):
+        return '<Name %r>' % self.name
+
+class Posts(db.Model):
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    title = db.Column(db.String(225))
+    content = db.Column(db.Text)
+    author = db.Column(db.String(225))
+    date_posted = db.Column(db.DateTime,
+                            default=datetime.utcnow)
+    slug = db.Column(db.String(255))
+
+    # class Users(db.Model,
+    #             UserMixin):
+    #     username = db.Column(db.String(20),
+    #                          nullable=False,
+    #                          unique=True)
+    #     id = db.Column(db.Integer,
+    #                    primary_key=True)
+    #     name = db.Column(db.String(200),
+    #                      nullable=False)
+    #     email = db.Column(db.String(120),
+    #                       nullable=False,
+    #                       unique=True)
+    #     fav_color = db.Column(db.String(120),
+    #                           default="None")
+    #
+    #     date_added = db.Column(db.DateTime,
+    #                            default=datetime.utcnow())
+    #     # passwords things
+    #     password_hash = db.Column(db.String(128))
+    #
+    #     @property
+    #     def password(self):
+    #         raise AttributeError('password is not a readable')
+    #
+    #     @password.setter
+    #     def password(self, _password):
+    #         self.password_hash = generate_password_hash(_password)
+    #
+    #     def verify_password(self, _password):
+    #         return check_password_hash(self.password_hash,
+    #                                    _password)
 
 if __name__ == '__main__':
     app.run()
