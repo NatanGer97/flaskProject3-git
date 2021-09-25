@@ -100,14 +100,15 @@ migrate = Migrate(app,
 def add_post():
     form = PostForm()
     if form.validate_on_submit():
+        poster = current_user.id
         post = Posts(title=form.title.data,
                      content=form.content.data,
-                     author=form.author.data,
+                     poster_id=poster,
                      slug=form.slug.data)
         # clear the form
         form.title.data = ''
         form.content.data = ''
-        form.author.data = ''
+        # form.author.data = ''
         form.slug.data = ''
 
         # add data to the db
@@ -132,11 +133,13 @@ def post(id):
 def edit_post(id):
     _post = Posts.query.get_or_404(id)
     form = PostForm()
+    # poster = Users.query.get_or_404(id)
+
     if form.validate_on_submit():
         _post.title = form.title.data
-        _post.author = form.author.data
         _post.slug = form.slug.data
         _post.content = form.content.data
+        # post.poster = poster.name
 
         # update db
         db.session.add(_post)
@@ -145,11 +148,11 @@ def edit_post(id):
         return redirect(url_for('post',
                                 id=_post.id))
     form.title.data = _post.title
-    form.author.data = _post.author
+    # form.author.data = _post.author
     form.slug.data = _post.slug
     form.content.data = _post.content
     return render_template('edit_post.html',
-                           form=form)
+                           form=form,id=id)
 
 
 @app.route('/posts/delete/<int:id>')
@@ -476,6 +479,8 @@ class Users(db.Model,
                            default=datetime.utcnow())
     # passwords things
     password_hash = db.Column(db.String(128))
+    #user can have many posts
+    posts = db.relationship('Posts',backref='poster')
 
     @property
     def password(self):
@@ -498,11 +503,12 @@ class Posts(db.Model):
                    primary_key=True)
     title = db.Column(db.String(225))
     content = db.Column(db.Text)
-    author = db.Column(db.String(225))
+    # author = db.Column(db.String(225))
     date_posted = db.Column(db.DateTime,
                             default=datetime.utcnow)
     slug = db.Column(db.String(255))
-
+    # foreign key to link users
+    poster_id = db.Column(db.Integer,db.ForeignKey('users.id'))
     # class Users(db.Model,
     #             UserMixin):
     #     username = db.Column(db.String(20),

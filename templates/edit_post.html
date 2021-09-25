@@ -9,14 +9,22 @@
     {% endfor %}
     <h1>Blog Posts</h1>
     <br>
+    {% if current_user.id == id%}
+
+
    <div class="container">
         <form method="post" class="shadow p-3 mb-5 bg-body rounded">
+
+            <h3> Poster: <small>{{ id }}</small></h3>
+
             {{ form.hidden_tag() }}
             {{ form.title.label(class="form-label") }}
             {{ form.title(class="form-control") }}
             <br/>
-            {{ form.author.label(class="form-label") }}
-            {{ form.author(class="form-control") }}
+{#            {{ form.author.label(class="form-label") }}#}
+{#            {{ form.author(class="form-control") }}#}
+{#              {{ form.author.label(class="form-label") }}}#}
+{#            {{ form.author(class="form-control") }}#}
             <br/>
             <br/>
             {{ form.slug.label(class="form-label") }}
@@ -34,6 +42,17 @@
         <br>
         <a href="{{ url_for('posts') }}" class="btn btn-outline-secondary btn-sm" >Back to all posts</a>
     </div>
+  {% else %}
+    <h2>must to be login..</h2>
+        <h2>{{ id }} {{ current_user.id }}</h2>
+    <a href="{{ url_for('login') }}"><strong>Login</strong></a>
+        <br><br><br>
+    {% endif %}
+{#{% else %}#}
+{#    <h2>must to be login..</h2>#}
+{#    <a href="{{ url_for('login') }}"><strong>Login</strong></a>#}
+{#        <br><br><br>#}
+{#    {% endif %}#}
 
 
 

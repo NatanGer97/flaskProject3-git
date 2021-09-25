@@ -27,14 +27,14 @@ class PostForm(FlaskForm):
     content = StringField("Content",
                           validators=[DataRequired()],
                           widget=TextArea())
-    author = StringField("Author",
-                         validators=[DataRequired()])
+    # author = StringField("Author",
+    #                      validators=[DataRequired()])
     slug = StringField("Slug",
                        validators=[DataRequired()])
     submit = SubmitField("Submir")
 
 
-
+# Git test
 # create form class
 class NamerForm(FlaskForm):
     name = StringField("What is your name?",
