@@ -9,9 +9,9 @@
 {#        <li class="nav-item">#}
 {#          <a class="nav-link" href=" {{url_for('user',name='natan')}} ">user profile</a>#}
 {#        </li>#}
-          <li class="nav-item">
-          <a class="nav-link" href=" {{url_for('user')}} ">user profile</a>
-        </li>
+{#          <li class="nav-item">#}
+{#          <a class="nav-link" href=" {{url_for('user')}} ">user profile</a>#}
+{#        </li>#}
            <li class="nav-item">
           <a class="nav-link" href=" {{url_for('name')}} ">Name</a>
         </li>
@@ -37,6 +37,10 @@
             <li class="nav-item">
           <a class="nav-link" href=" {{url_for('posts')}}">Post </a>
         </li>
+          <li class="nav-item">
+          <a class="nav-link" href=" {{url_for('user_posts')}}">User Posts </a>
+        </li>
+
 
       
       </ul>

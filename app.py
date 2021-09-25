@@ -176,6 +176,14 @@ def delete_post(id):
         return render_template(url_for('post',
                                        posts=our_posts))
 
+@app.route('/user-posts')
+@login_required
+def user_posts():
+    user_id = current_user.id
+    print(f'user id is:{user_id}')
+    # posts = Posts.query.get_or_404(user_id)
+
+    return render_template('user_posts.html')
 
 @app.route('/posts')
 def posts():
@@ -335,7 +343,7 @@ def logout():
 
 @app.route('/dashboard',
            methods=['POST', 'GET'])
-equired
+@login_required
 def dashboard():
     form = UserForm()
     id = current_user.id
@@ -364,7 +372,7 @@ def dashboard():
                                form=form,
                                name_to_update=name_to_update,id=id)
 
-    return render_template('dashboard.html')
+    # return render_template('dashboard.html')
 
 
 # creat dashboard page
@@ -376,11 +384,17 @@ def index():
 
 
 # localhost:500/user/username
-
-@app.route('/user/<name>')
-def user(name):
-  return render_template('pr')
-
+    # @login_required
+    # @app.route('/user/')
+    # def user():
+    #     form = UserForm()
+    #     id = current_user.id
+    #
+    #     name_to_update = Users.query.get_or_404(current_user.id)
+    #     return render_template("dashboard.html",
+    #                            form=form,
+    #                            name_to_update=name_to_update,
+    #                            id=id)
 
 # create a test password page
 
@@ -444,16 +458,16 @@ def get_current_date():
     return fav_pizza
     # return  {"Date:":date.today()}
 
-#
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template("404.html"), 404
-#
-#
-# # Internal Server Error
-# @app.errorhandler(500)
-# def page_not_found(e):
-#     return render_template("500.html"), 500
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+
+# Internal Server Error
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template("500.html"), 500
 class Users(db.Model,
             UserMixin):
     username = db.Column(db.String(20),
@@ -466,8 +480,8 @@ class Users(db.Model,
     email = db.Column(db.String(120),
                       nullable=False,
                       unique=True)
-    fav_color = db.Column(db.String(120),
-                          default="None")
+    # fav_color = db.Column(db.String(120),
+    #                       default="None")
 
     date_added = db.Column(db.DateTime,
                            default=datetime.utcnow())
