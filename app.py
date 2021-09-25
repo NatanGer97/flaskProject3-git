@@ -335,11 +335,7 @@ def logout():
 
 @app.route('/dashboard',
            methods=['POST', 'GET'])
-
-
-
-
-@login_required
+equired
 def dashboard():
     form = UserForm()
     id = current_user.id
@@ -376,7 +372,6 @@ def dashboard():
 @app.route('/')
 def index():
     flash("WELCOME")
-    first_name = "avi"
     return render_template('index.html')
 
 
@@ -384,8 +379,7 @@ def index():
 
 @app.route('/user/<name>')
 def user(name):
-    return render_template('user.html',
-                           user_name=name)
+  return render_template('pr')
 
 
 # create a test password page
